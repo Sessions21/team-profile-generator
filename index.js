@@ -2,11 +2,17 @@
 
 const inquirer = require('inquirer');
 const fs = require('fs');
-const { join } = require('path/posix');
+const path = require('path');
 const Manager = require('./lib/Manager');
 const Engineer = require('./lib/Engineer');
 const Intern = require('./lib/Intern');
+
+const DIST_DIR = path.resolve(__dirname, 'dist');
+const distroPath = path.join(DIST_DIR, 'team-ouput.html');
+
 const generatePage = require('./src/template');
+
+const employeeCards = [];
 
 const initializePrompt = () => {
   const buildManager = () => {
@@ -54,9 +60,9 @@ const initializePrompt = () => {
         type: 'input',
         name: 'managerEmail',
         message: "Please provide the manager's email address:",
-        validate: (Email) => {
-          const managerEmail = answer.match(/\S+@\S+\.\S+/);
-          if (managerEmail) {
+        validate: (managerEmail) => {
+          const Email = managerEmail.match(/\S+@\S+\.\S+/);
+          if (Email) {
             return true;
           }
           return 'Please enter a valid email address.';
@@ -162,7 +168,7 @@ const initializePrompt = () => {
           name: 'engineerEmail',
           message: "Please provide the engineer's email address:",
           validate: (Email) => {
-            const engineerEmail = answer.match(/\S+@\S+\.\S+/);
+            const engineerEmail = Email.match(/\S+@\S+\.\S+/);
             if (engineerEmail) {
               return true;
             }
@@ -242,7 +248,7 @@ const initializePrompt = () => {
           name: 'internEmail',
           message: "Please provide the intern's email address:",
           validate: (Email) => {
-            const internEmail = answer.match(/\S+@\S+\.\S+/);
+            const internEmail = Email.match(/\S+@\S+\.\S+/);
             if (internEmail) {
               return true;
             }
@@ -277,29 +283,13 @@ const initializePrompt = () => {
     };
 
     const createTeam = () => {
-      
+    if (!fs.existsSync(DIST_DIR)) {
+      fs.mkdirSync(DIST_DIR);
     }
-
-}
-const employeeCards = [];
-
-
-// 
-
-const DIST_DIR = path.resolve(__dirname, 'dist');
-const distPath = path.join(DIST_DIR, 'team.html');
-
-const render = require('./src/template');
-
-function createTeam() {
-  // Create the output directory if the dist path doesn't exist
-  if (!fs.existsSync(DIST_DIR)) {
-    fs.mkdirSync(DIST_DIR);
+    fs.writeFileSync(distroPath, generatePage(employeeCards), 'utf-8');
   }
-  fs.writeFileSync(distPath, render(teamMembers), 'utf-8');
+
+  buildManager();
 }
 
-createManager();
-}
-
-start();
+initializePrompt();
