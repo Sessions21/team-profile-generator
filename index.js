@@ -117,8 +117,170 @@ const initializePrompt = () => {
     }
 
     const newEngineer = () => {
+      inquirer.prompt([
+        {
+          type: 'input',
+          name: 'engineerFirst',
+          message: "Please provide the engineer's first name:",
+          validate: engineerFirst => {
+            if (engineerFirst) {
+              return true;
+            } else {
+              console.log('Enter a name to continue:');
+              return false;
+            }
+          }
+        },
+        {
+          type: 'input',
+          name: 'engineerLast',
+          message: "Please provide the engineer's last name:",
+          validate: engineerLast => {
+            if (engineerLast) {
+              return true;
+            } else {
+              console.log('Enter a name to continue:');
+              return false;
+            }
+          }
+        },
+        {
+          type: 'input',
+          name: 'engineerId',
+          message: "Please provide the employee ID:",
+          validate: engineerId => {
+            if (engineerId) {
+              return true;
+            } else {
+              console.log('Enter an ID to continue:');
+              return false;
+            }
+          }
+        },
+        {
+          type: 'input',
+          name: 'engineerEmail',
+          message: "Please provide the engineer's email address:",
+          validate: (Email) => {
+            const engineerEmail = answer.match(/\S+@\S+\.\S+/);
+            if (engineerEmail) {
+              return true;
+            }
+            return 'Please enter a valid email address.';
+          }
+        },
+        {
+          type: 'input',
+          name: 'engineerGithub',
+          message: 'Please provide GitHub username:',
+          validate: githubInput => {
+            if (githubInput) {
+              return true;
+            } else {
+              console.log('Enter GitHub username to continue:');
+              return false;
+            }
+          }
+        },
+      ])
+      .then((input) => {
+        const engineer = new Engineer(
+          input.engineerFirst,
+          input.engineerLast,
+          input.engineerId,
+          input.engineerEmail,
+          input.engineerGithub
+        );
+        employeeCards.push(engineer);
+        addTeam();
+      });
+    };
+
+    const newIntern = () => {
+      inquirer.prompt([
+        {
+          type: 'input',
+          name: 'internFirst',
+          message: "Please provide the intern's first name:",
+          validate: internFirst => {
+            if (internFirst) {
+              return true;
+            } else {
+              console.log('Enter a name to continue:');
+              return false;
+            }
+          }
+        },
+        {
+          type: 'input',
+          name: 'internLast',
+          message: "Please provide the intern's last name:",
+          validate: internLast => {
+            if (internLast) {
+              return true;
+            } else {
+              console.log('Enter a name to continue:');
+              return false;
+            }
+          }
+        },
+        {
+          type: 'input',
+          name: 'internId',
+          message: "Please provide the employee ID:",
+          validate: internId => {
+            if (internId) {
+              return true;
+            } else {
+              console.log('Enter an ID to continue:');
+              return false;
+            }
+          }
+        },
+        {
+          type: 'input',
+          name: 'internEmail',
+          message: "Please provide the intern's email address:",
+          validate: (Email) => {
+            const internEmail = answer.match(/\S+@\S+\.\S+/);
+            if (internEmail) {
+              return true;
+            }
+            return 'Please enter a valid email address.';
+          }
+        },
+        {
+          type: 'input',
+          name: 'internSchool',
+          message: "Please provide the school the intern is attending:",
+          validate: internSchool => {
+            if (internSchool) {
+              return true;
+            } else {
+              console.log('Enter a school or N/A to continue:');
+              return false;
+            }
+          }
+        },
+      ])
+      .then((input) => {
+        const intern = new Intern(
+          input.internFirst,
+          input.internLast,
+          input.internId,
+          input.internEmail,
+          input.internSchool
+        );
+        employeeCards.push(intern);
+        addTeam();
+      });
+    };
+
+    const createTeam = () => {
       
     }
+
+}
 const employeeCards = [];
 
 
@@ -129,8 +291,15 @@ const distPath = path.join(DIST_DIR, 'team.html');
 
 const render = require('./src/template');
 
-fs.writeFile('./index.html', pageHTML, err => {
-  if (err) throw err;
+function createTeam() {
+  // Create the output directory if the dist path doesn't exist
+  if (!fs.existsSync(DIST_DIR)) {
+    fs.mkdirSync(DIST_DIR);
+  }
+  fs.writeFileSync(distPath, render(teamMembers), 'utf-8');
+}
 
-  console.log('Portfolio complete! Check out index.html to see the output!');
-});
+createManager();
+}
+
+start();
